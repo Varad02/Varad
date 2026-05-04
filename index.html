@@ -2463,9 +2463,14 @@
         ['devpost:  <k>devpost.com/vkottawar</k>', 'out'],
       ]),
       socials: () => commands.contact(),
-      resume: () => block([
-        ['→ resume not wired up yet — email <k>vkottawar@ucsd.edu</k> for a copy.', 'ok'],
-      ]),
+      resume: () => {
+        const url = './resume.pdf';
+        window.open(url, '_blank', 'noopener,noreferrer');
+        return block([
+          ['→ opening resume in a new tab', 'ok'],
+          [`  direct link: <a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`, 'info'],
+        ]);
+      },
       cv: () => commands.resume(),
       theme: async () => {
         document.getElementById('themeToggle')?.click();
@@ -2487,7 +2492,7 @@
         ['[sudo] password for visitor:', 'out'],
         ['hiring varad…', 'out'],
         ['  ✓ availability confirmed (summer + fulltime)', 'ok'],
-        ['  ✓ stack: python · cuda · pytorch · go · ts · react', 'ok'],
+        ['  ✓ stack: python · cuda · pytorch · c++ · java · react', 'ok'],
         ['  ✓ next step: <k>email vkottawar@ucsd.edu</k>', 'ok'],
         ['process complete. exit code 0.', 'ok'],
       ]),
