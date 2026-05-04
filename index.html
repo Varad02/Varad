@@ -4,13 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Varad Kottawar</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23080808'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='Verdana,sans-serif' font-size='28' font-weight='700' fill='%23c4b49a' letter-spacing='-1'%3EVK%3C/text%3E%3Ccircle cx='49' cy='44' r='2' fill='%23c4b49a'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
+    :root, :root[data-theme="dark"] {
       --bg:      #080808;
       --bg2:     #0f0f0f;
       --surface: #141414;
@@ -20,9 +21,23 @@
       --text:    #f0ede8;
       --muted:   #666;
       --faint:   #1e1e1e;
+      --grid:    rgba(196,180,154,0.06);
       --sans:    'DM Sans', system-ui, sans-serif;
       --name:    Verdana, Geneva, sans-serif;
     }
+    :root[data-theme="light"] {
+      --bg:      #f5f2ec;
+      --bg2:     #ebe7df;
+      --surface: #ffffff;
+      --border:  #d8d2c5;
+      --accent:  #6b5a3e;
+      --accent2: #8a7758;
+      --text:    #1a1a1a;
+      --muted:   #6b6258;
+      --faint:   #e0dbd0;
+      --grid:    rgba(107,90,62,0.08);
+    }
+    :root, body { transition: background-color .35s, color .35s; }
 
     html { scroll-behavior: smooth; }
     body {
@@ -42,8 +57,7 @@
     /* ── CUSTOM CURSOR ──────────────────────────────── */
     #cursor-dot {
       position: fixed; width: 8px; height: 8px;
-      background: var(--accent); border-radius: 50%;
-      pointer-events: none; z-index: 9999;
+      background: var(--accent); border-radius: 50%;      pointer-events: none; z-index: 9999;
       transform: translate(-50%, -50%);
       transition: width .2s, height .2s, background .2s;
     }
@@ -60,6 +74,19 @@
     body:has(button:hover) #cursor-dot { width: 12px; height: 12px; background: var(--accent2); }
     body:has(a:hover) #cursor-ring,
     body:has(button:hover) #cursor-ring { width: 56px; height: 56px; border-color: rgba(196,180,154,.25); }
+
+    /* ── CURSOR TRAIL ───────────────────────────────── */
+    #cursor-trail {
+      position: fixed; inset: 0; z-index: 9998;
+      pointer-events: none;
+    }
+    #cursor-trail .tdot {
+      position: absolute; width: 6px; height: 6px;
+      background: var(--accent); border-radius: 50%;
+      transform: translate(-50%, -50%);
+      will-change: transform, opacity;
+    }
+    body.matrix #cursor-trail .tdot { background: #00ff66 !important; }
 
     /* ── NOISE OVERLAY ──────────────────────────────── */
     #noise {
@@ -78,7 +105,7 @@
       border-bottom: 1px solid transparent;
     }
     nav.scrolled {
-      background: rgba(8,8,8,.9);
+      background: color-mix(in oklab, var(--bg) 88%, transparent);
       backdrop-filter: blur(24px);
       border-color: var(--border);
     }
@@ -104,6 +131,15 @@
 
     /* ── HERO ───────────────────────────────────────── */
     .hero-shell { position: relative; }
+    /* WebGL drifting-blob backdrop */
+    #hero-fx {
+      position: absolute; inset: 0; z-index: 0;
+      pointer-events: none; opacity: .55;
+      mask-image: radial-gradient(ellipse 80% 70% at 25% 50%, black 30%, transparent 80%);
+      -webkit-mask-image: radial-gradient(ellipse 80% 70% at 25% 50%, black 30%, transparent 80%);
+    }
+    :root[data-theme="light"] #hero-fx { opacity: .42; }
+    #hero-fx canvas { width: 100%; height: 100%; display: block; }
     #hero {
       min-height: calc(100vh - 96px); display: grid;
       grid-template-columns: 1fr 1fr;
@@ -210,7 +246,7 @@
     }
     .hero-img-tag {
       position: absolute; bottom: 32px; right: 32px; z-index: 2;
-      background: rgba(8,8,8,.75); backdrop-filter: blur(12px);
+      background: color-mix(in oklab, var(--bg) 80%, transparent); backdrop-filter: blur(12px);
       border: 1px solid var(--border); padding: 8px 16px;
       font-size: 12px; color: var(--muted); letter-spacing: .04em;
     }
@@ -308,13 +344,14 @@
     }
     .expertise-stats { display: flex; gap: 0; margin-top: 48px; }
     .exp-stat {
-      padding: 0 40px 0 0; border-right: 1px solid var(--border);
-      margin-right: 40px;
+      flex: 1; padding: 0 32px 0 0; border-right: 1px solid var(--border);
+      margin-right: 32px; min-width: 0;
     }
-    .exp-stat:last-child { border-right: none; margin-right: 0; }
+    .exp-stat:last-child { border-right: none; margin-right: 0; padding-right: 0; }
     .exp-stat-num {
       font-family: var(--name); font-size: 44px; font-weight: 700;
       color: var(--accent); line-height: 1; display: block;
+      font-variant-numeric: tabular-nums;
     }
     .exp-stat-label { font-size: 12px; color: var(--muted); margin-top: 6px; }
 
@@ -595,6 +632,12 @@
     }
     .f-submit:hover { gap: 12px; }
     .f-submit svg { width: 18px; height: 18px; }
+    .f-hint {
+      margin-top: 18px; font-family: var(--mono); font-size: 11px;
+      color: var(--muted); letter-spacing: .04em; transition: color .2s;
+    }
+    .f-hint.ok { color: var(--accent); }
+    .f-hint.err { color: var(--accent2); }
 
     /* ── FOOTER ─────────────────────────────────────── */
     footer {
@@ -609,6 +652,27 @@
     }
     .footer-tagline { font-size: 14px; color: var(--muted); }
     .footer-tagline strong { color: var(--text); }
+    .footer-hint {
+      display: inline-flex; align-items: center; gap: 10px;
+      margin-top: 18px;
+      padding: 8px 14px;
+      background: none;
+      border: 1px dashed var(--border);
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: .04em;
+      cursor: none;
+      transition: border-color .25s, color .25s, background .25s;
+    }
+    .footer-hint:hover { border-color: var(--accent); color: var(--text); background: color-mix(in oklab, var(--accent) 8%, transparent); }
+    .footer-hint .hint-key {
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: .12em;
+    }
+    .footer-hint .hint-text { opacity: .8; }
     .footer-socials { display: flex; justify-content: center; gap: 14px; margin-top: 28px; }
     .footer-soc {
       width: 36px; height: 36px; border: 1px solid var(--border);
@@ -647,7 +711,7 @@
       text-transform: uppercase; color: var(--muted);
       margin-bottom: 28px; align-self: flex-start;
       opacity: 0; animation: fadeUp .8s .35s cubic-bezier(.22,1,.36,1) forwards;
-      background: rgba(20,20,20,.6); backdrop-filter: blur(6px);
+      background: color-mix(in oklab, var(--surface) 70%, transparent); backdrop-filter: blur(6px);
     }
     .hero-status .dot {
       width: 7px; height: 7px; border-radius: 50%;
@@ -688,7 +752,7 @@
     /* ── ASCII PORTRAIT ────────────────────────────── */
     .hero-img-toggle {
       position: absolute; top: 32px; right: 32px; z-index: 3;
-      background: rgba(8,8,8,.7); backdrop-filter: blur(8px);
+      background: color-mix(in oklab, var(--bg) 80%, transparent); backdrop-filter: blur(8px);
       border: 1px solid var(--border); padding: 6px 12px;
       font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
       color: var(--muted); cursor: none; font-family: var(--sans);
@@ -717,7 +781,7 @@
     .whoami-head {
       display: flex; align-items: center; gap: 8px;
       padding: 10px 14px; border-bottom: 1px solid var(--border);
-      background: #141414;
+      background: var(--surface);
     }
     .whoami-head .dot {
       width: 11px; height: 11px; border-radius: 50%;
@@ -858,10 +922,131 @@
     }
     body.matrix #matrix-canvas { opacity: .25; }
 
+    /* ── CLI OVERLAY (Konami easter egg) ───────────── */
+    #cli {
+      position: fixed; inset: auto 24px 24px 24px;
+      max-width: 720px; margin: 0 auto;
+      background: rgba(10,10,10,.92); backdrop-filter: blur(14px);
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      font-family: var(--mono);
+      font-size: 13px; color: #d4ddd7;
+      box-shadow: 0 24px 60px rgba(0,0,0,.55), 0 0 0 1px rgba(217,119,87,.18);
+      z-index: 9990;
+      transform: translateY(120%); opacity: 0;
+      transition: transform .4s cubic-bezier(.22,1,.36,1), opacity .25s;
+    }
+    #cli.open { transform: translateY(0); opacity: 1; }
+    #cli .cli-head {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(217,119,87,.25);
+      color: var(--accent); font-size: 11px; letter-spacing: .14em;
+    }
+    #cli .cli-head .cli-dots { display: inline-flex; gap: 6px; }
+    #cli .cli-head .cli-dot { width: 10px; height: 10px; border-radius: 50%; background: #444; }
+    #cli .cli-head .cli-dot.r { background: #e8624a; }
+    #cli .cli-head .cli-dot.y { background: #e8b440; }
+    #cli .cli-head .cli-dot.g { background: #4ad174; }
+    #cli .cli-head .cli-title { flex: 1; opacity: .8; }
+    #cli .cli-head .cli-hint { font-size: 10px; color: #888; letter-spacing: .04em; text-transform: none; font-family: var(--sans); }
+    #cli .cli-body {
+      max-height: 45vh; overflow-y: auto;
+      padding: 14px;
+      line-height: 1.7;
+    }
+    #cli .cli-body::-webkit-scrollbar { width: 6px; }
+    #cli .cli-body::-webkit-scrollbar-thumb { background: rgba(217,119,87,.35); border-radius: 3px; }
+    #cli .cli-line { white-space: pre-wrap; word-break: break-word; }
+    #cli .cli-line.cmd { color: #fff; }
+    #cli .cli-line.cmd::before { content: '$ '; color: var(--accent); }
+    #cli .cli-line.out { color: #b8b8b8; }
+    #cli .cli-line.out k { color: var(--accent); font-weight: 700; font-style: normal; }
+    #cli .cli-line.err { color: #e8624a; }
+    #cli .cli-line.ok { color: #4ad174; }
+    #cli .cli-prompt {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 14px;
+      border-top: 1px solid rgba(217,119,87,.25);
+    }
+    #cli .cli-prompt::before {
+      content: 'visitor@varad.dev:~$';
+      color: var(--accent); font-weight: 700;
+    }
+    #cli .cli-input {
+      flex: 1; background: none; border: none; outline: none;
+      font: inherit; color: #fff; caret-color: var(--accent);
+    }
+    #cli .cli-close {
+      background: none; border: 1px solid #444; color: #888;
+      font-family: inherit; font-size: 10px; padding: 2px 8px;
+      border-radius: 3px; cursor: none; letter-spacing: .08em;
+      transition: color .2s, border-color .2s;
+    }
+    #cli .cli-close:hover { color: var(--accent); border-color: var(--accent); }
+    @media (max-width: 600px) {
+      #cli { font-size: 12px; inset: auto 12px 12px 12px; }
+      #cli .cli-body { max-height: 50vh; }
+    }
+
+    /* ── THEME TOGGLE BUTTON ───────────────────────── */
+    #themeToggle {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--surface); border: 1px solid var(--border);
+      display: inline-flex; align-items: center; justify-content: center;
+      color: var(--accent); margin-left: 18px;
+      transition: background .25s, border-color .25s, transform .3s;
+      position: relative; overflow: hidden;
+    }
+    #themeToggle:hover { border-color: var(--accent); transform: rotate(20deg); }
+    #themeToggle svg { width: 18px; height: 18px; transition: opacity .3s, transform .4s; position: absolute; }
+    :root[data-theme="dark"] #themeToggle .sun { opacity: 1; transform: rotate(0); }
+    :root[data-theme="dark"] #themeToggle .moon { opacity: 0; transform: rotate(-90deg); }
+    :root[data-theme="light"] #themeToggle .sun { opacity: 0; transform: rotate(90deg); }
+    :root[data-theme="light"] #themeToggle .moon { opacity: 1; transform: rotate(0); }
+
+    /* ── DUAL-IDENTITY ROLE COLOR ──────────────────── */
+    .hero-roles .typed[data-kind="human"] {
+      color: #e7a87c;
+    }
+    :root[data-theme="light"] .hero-roles .typed[data-kind="human"] {
+      color: #b86a3a;
+    }
+
+    /* ── SCROLL BACKGROUND (grid + drift, full-site ambient) ──── */
+    #bg-fx {
+      position: fixed; inset: 0; z-index: 50;
+      pointer-events: none; overflow: hidden;
+    }
+    #bg-fx .grid {
+      position: absolute; inset: -10%;
+      background-image:
+        linear-gradient(to right, var(--grid) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+      background-size: 64px 64px;
+      opacity: .25;
+      will-change: background-position;
+      mask-image: radial-gradient(ellipse 90% 70% at 50% 50%, black 25%, transparent 95%);
+      -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 50%, black 25%, transparent 95%);
+    }
+    #bg-fx .drift {
+      position: absolute; right: -8%; top: 60vh;
+      width: 720px; height: 480px;
+      opacity: .12;
+      will-change: transform;
+      transition: opacity .4s;
+    }
+    :root[data-theme="light"] #bg-fx .drift { opacity: .22; }
+    #bg-fx .drift svg { width: 100%; height: 100%; stroke: var(--accent); fill: none; stroke-width: 1; }
+    /* Sections sit normally — bg-fx is a pointer-none ambient overlay */
+    nav, section, footer { position: relative; z-index: 1; }
+    /* Boot overlay above bg-fx */
+    #boot { z-index: 10000; }
+
     /* ── RESPONSIVE ─────────────────────────────────── */
     @media (max-width: 900px) {
       body { cursor: auto; }
-      #cursor-dot, #cursor-ring { display: none; }
+      #cursor-dot, #cursor-ring, #cursor-trail { display: none; }
       nav { padding: 20px 24px; }
       .nav-links { display: none; }
       #hero { grid-template-columns: 1fr; min-height: auto; }
@@ -893,7 +1078,27 @@
     }
   </style>
 </head>
-<body>
+<body data-theme="dark">
+
+<!-- ── SCROLL BACKGROUND FX ───────────────────────────── -->
+<div id="bg-fx" aria-hidden="true">
+  <div class="grid"></div>
+  <div class="drift" id="bgDrift">
+    <!-- subtle wireframe shape, parallax-driven -->
+    <svg viewBox="0 0 720 480" preserveAspectRatio="xMidYMid meet">
+      <g opacity="0.9">
+        <ellipse cx="360" cy="240" rx="320" ry="40" />
+        <path d="M40 240 L360 200 L680 240 L360 280 Z" />
+        <path d="M360 200 L360 280" />
+        <path d="M120 240 L160 220 L160 260 Z" />
+        <path d="M560 240 L600 220 L600 260 Z" />
+        <path d="M260 240 L260 180 M280 240 L280 180 M300 240 L300 180" />
+        <path d="M420 240 L420 180 M440 240 L440 180 M460 240 L460 180" />
+        <circle cx="360" cy="240" r="8" />
+      </g>
+    </svg>
+  </div>
+</div>
 
 <!-- Boot overlay -->
 <div id="boot"><div class="boot-inner">
@@ -908,9 +1113,24 @@
 <canvas id="matrix-canvas"></canvas>
 <canvas id="confetti-canvas"></canvas>
 
+<!-- CLI overlay (opens via Konami code or footer hint click) -->
+<div id="cli" role="dialog" aria-label="Easter egg terminal" aria-hidden="true">
+  <div class="cli-head">
+    <span class="cli-dots"><span class="cli-dot r"></span><span class="cli-dot y"></span><span class="cli-dot g"></span></span>
+    <span class="cli-title"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="52243b213b263d201224332033367c363724">[email&#160;protected]</a> — bash</span>
+    <span class="cli-hint">type <b>help</b> · esc to close</span>
+    <button class="cli-close" type="button" aria-label="Close terminal">close</button>
+  </div>
+  <div class="cli-body" id="cliBody"></div>
+  <div class="cli-prompt">
+    <input class="cli-input" id="cliInput" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+  </div>
+</div>
+
 <!-- Cursor -->
 <div id="cursor-dot"></div>
 <div id="cursor-ring"></div>
+<div id="cursor-trail" aria-hidden="true"></div>
 <!-- Noise -->
 <div id="noise"></div>
 
@@ -926,10 +1146,15 @@
     <li><a href="#personal" data-section="personal">Vibes</a></li>
     <li><a href="#contact" data-section="contact">Contact</a></li>
   </ul>
+  <button id="themeToggle" type="button" aria-label="Toggle light/dark" title="Toggle theme">
+    <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+    <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  </button>
 </nav>
 
 <!-- ── HERO ─────────────────────────────────────────── -->
 <section id="hero">
+  <div id="hero-fx" aria-hidden="true"><canvas id="heroFxCanvas"></canvas></div>
   <div class="hero-left">
     <span class="hero-status"><span class="dot"></span>Available for SWE / MLE roles · San Diego</span>
     <h1 class="hero-name">
@@ -947,6 +1172,9 @@
 
     <div class="hero-ctas">
       <a href="#contact" class="btn-primary">Get in touch</a>
+      <a href="assets/Varad_Kottawar_Resume.pdf" target="_blank" rel="noopener" class="btn-outline">
+        <svg style="width:14px;height:14px;margin-right:8px;vertical-align:-2px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 3h7v7M21 3l-9 9M5 21h14a2 2 0 002-2v-7"/></svg>Resume
+      </a>
       <a href="#projects" class="btn-outline">View my work</a>
     </div>
 
@@ -957,9 +1185,7 @@
   </div>
 
   <div class="hero-right">
-    <button class="hero-img-toggle" id="asciiToggle" type="button">ASCII</button>
-    <pre class="hero-ascii" id="asciiCanvas" aria-hidden="true"></pre>
-    <img class="hero-img" src="./IMG_20240211_172808_965.jpg" alt="Varad Kottawar with a mountain dog in the Himalayas" onerror="this.style.display='none';this.parentElement.classList.add('no-img');" />
+    <img class="hero-img" src="assets/me.jpg" alt="Varad Kottawar with a mountain dog in the Himalayas" onerror="this.style.display='none';this.parentElement.classList.add('no-img');" />
     <span class="hero-img-tag">📍 somewhere with a good dog</span>
   </div>
   <div class="hero-scroll">
@@ -978,18 +1204,18 @@
         <p class="sec-label reveal">What I Do</p>
         <h2 class="sec-title reveal">Where I add<br /><span class="outline">real value.</span></h2>
         <p class="expertise-text reveal">
-          Two years at Deutsche Bank shipping backend systems that served over 100,000 employees.
+          Backend systems that quietly hold up critical infrastructure for hundreds of thousands of users.
           Now at University of California San Diego, going deep on machine learning systems,
           GPU computing, and artificial intelligence pipelines. I like hard problems.
         </p>
         <div class="expertise-stats reveal rd2">
           <div class="exp-stat">
-            <span class="exp-stat-num" data-count="2" data-suffix="+">2+</span>
-            <p class="exp-stat-label">Years at Deutsche Bank</p>
+            <span class="exp-stat-num" data-count="40" data-suffix="+">40+</span>
+            <p class="exp-stat-label">Production releases shipped</p>
           </div>
           <div class="exp-stat">
             <span class="exp-stat-num" data-count="156" data-suffix="×">156×</span>
-            <p class="exp-stat-label">GPU speedup</p>
+            <p class="exp-stat-label">GPU speedup over baseline</p>
           </div>
           <div class="exp-stat">
             <span class="exp-stat-num" data-count="100" data-suffix="K+">100K+</span>
@@ -1408,8 +1634,8 @@
         <p class="sec-label reveal">Contact</p>
         <h2 class="contact-big reveal">Got a project?<br /><span class="outline">Let's talk.</span></h2>
         <p class="contact-sub reveal">Open to full-time roles, research collaborations, and interesting side projects. I respond fast.</p>
-        <a href="/cdn-cgi/l/email-protection#c3b5a8acb7b7a2b4a2b183b6a0b0a7eda6a7b6" class="contact-email-link reveal" id="emailLink">
-          <span id="emailText"><span class="__cf_email__" data-cfemail="a0d6cbcfd4d4c1d7c1d2e0d5c3d3c48ec5c4d5">[email&#160;protected]</span></span>
+        <a href="/cdn-cgi/l/email-protection#fd8b969289899c8a9c8fbd889e8e99d3989988" class="contact-email-link reveal" id="emailLink">
+          <span id="emailText"><span class="__cf_email__" data-cfemail="681e03071c1c091f091a281d0b1b0c460d0c1d">[email&#160;protected]</span></span>
           <svg fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
         </a>
         <div class="contact-icons reveal">
@@ -1420,17 +1646,18 @@
           <a href="https://x.com/KottawarVarad" target="_blank" rel="noopener" class="c-icon" title="X"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
         </div>
       </div>
-      <div class="contact-form reveal rd1">
+      <form class="contact-form reveal rd1" id="contactForm" onsubmit="return submitContact(event)">
         <h3 class="form-heading">Want to work together?<br />Let me know here.</h3>
-        <input class="f-field" type="text" placeholder="What is your name?" />
-        <input class="f-field" type="email" placeholder="Your email address" />
+        <input class="f-field" type="text" name="cf-name" id="cf-name" placeholder="What is your name?" autocomplete="name" required />
+        <input class="f-field" type="email" name="cf-email" id="cf-email" placeholder="Your email address" autocomplete="email" required />
         <div class="f-row">
-          <input class="f-row-input" type="text" placeholder="Tell me about your project" />
-          <button class="f-submit" onclick="alert('Thank you! Reach out directly at vkottawar@ucsd.edu')">
+          <input class="f-row-input" type="text" name="cf-msg" id="cf-msg" placeholder="Tell me about your project" required />
+          <button class="f-submit" type="submit" aria-label="Send message">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
           </button>
         </div>
-      </div>
+        <p class="f-hint" id="cfHint">Submitting opens your mail app addressed to <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ddabb6b2a9a9bcaabcaf9da8beaeb9f3b8b9a8">[email&#160;protected]</a>.</p>
+      </form>
     </div>
   </div>
 </section>
@@ -1439,6 +1666,10 @@
 <footer>
   <p class="footer-mark">VK.</p>
   <p class="footer-tagline"><strong>Thanks for scrolling,</strong> that is all folks.</p>
+  <button class="footer-hint" id="footerHint" type="button" aria-label="Open easter egg terminal">
+    <span class="hint-key">↑↑↓↓←→←→ B A</span>
+    <span class="hint-text">— try this anywhere. or click here.</span>
+  </button>
   <div class="footer-socials">
     <a href="https://github.com/Varad02" target="_blank" rel="noopener" class="footer-soc"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg></a>
     <a href="https://linkedin.com/in/varadkottawar" target="_blank" rel="noopener" class="footer-soc"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
@@ -1450,15 +1681,46 @@
 </footer>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-  // Custom cursor
+  // Custom cursor + trail
   const dot = document.getElementById('cursor-dot');
   const ring = document.getElementById('cursor-ring');
+  const trail = document.getElementById('cursor-trail');
   let mx = 0, my = 0, rx = 0, ry = 0;
   document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+  // Pre-create a pool of trail dots
+  const TRAIL_LEN = 14;
+  const tdots = [];
+  for (let i = 0; i < TRAIL_LEN; i++) {
+    const d = document.createElement('div');
+    d.className = 'tdot';
+    trail.appendChild(d);
+    tdots.push({ el: d, x: 0, y: 0 });
+  }
+  let tHead = 0;
+  let tTick = 0;
+
   (function animCursor() {
     dot.style.left = mx + 'px'; dot.style.top = my + 'px';
     rx += (mx - rx) * .12; ry += (my - ry) * .12;
     ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+
+    // Sample mouse position into trail every 2 frames
+    if ((tTick++ % 2) === 0) {
+      const slot = tdots[tHead];
+      slot.x = mx; slot.y = my;
+      tHead = (tHead + 1) % TRAIL_LEN;
+    }
+    // Render trail: oldest = most faded/small, newest = brightest/largest
+    for (let i = 0; i < TRAIL_LEN; i++) {
+      const idx = (tHead + i) % TRAIL_LEN;
+      const age = (TRAIL_LEN - 1 - i) / (TRAIL_LEN - 1); // 0 = oldest, 1 = newest
+      const slot = tdots[idx];
+      const scale = 0.3 + age * 0.9;
+      const opacity = age * 0.55;
+      slot.el.style.transform = `translate(${slot.x}px, ${slot.y}px) translate(-50%,-50%) scale(${scale})`;
+      slot.el.style.opacity = opacity.toFixed(3);
+    }
     requestAnimationFrame(animCursor);
   })();
 
@@ -1467,6 +1729,178 @@
   window.addEventListener('scroll', () => {
     nav.classList.toggle('scrolled', window.scrollY > 50);
   }, { passive: true });
+
+  /* ── HERO WEBGL: drifting accent blobs (metaball-ish noise) ── */
+  (function heroFx() {
+    const canvas = document.getElementById('heroFxCanvas');
+    if (!canvas) return;
+    const gl = canvas.getContext('webgl', { antialias: false, alpha: true, premultipliedAlpha: false });
+    if (!gl) return;
+
+    const vsrc = `
+      attribute vec2 aPos;
+      void main() { gl_Position = vec4(aPos, 0.0, 1.0); }
+    `;
+    // Simple value-noise + 4 drifting blobs combined into a soft field, tinted with theme accent.
+    const fsrc = `
+      precision highp float;
+      uniform vec2  uRes;
+      uniform float uTime;
+      uniform vec3  uAccent;
+      uniform vec3  uAccent2;
+      uniform float uDark;
+
+      // hash + value noise
+      float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+      float noise(vec2 p) {
+        vec2 i = floor(p), f = fract(p);
+        float a = hash(i);
+        float b = hash(i + vec2(1.0, 0.0));
+        float c = hash(i + vec2(0.0, 1.0));
+        float d = hash(i + vec2(1.0, 1.0));
+        vec2 u = f * f * (3.0 - 2.0 * f);
+        return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+      }
+      float fbm(vec2 p) {
+        float v = 0.0; float a = 0.5;
+        for (int i = 0; i < 5; i++) { v += a * noise(p); p *= 2.0; a *= 0.5; }
+        return v;
+      }
+
+      void main() {
+        vec2 uv = gl_FragCoord.xy / uRes.xy;
+        vec2 p = uv * 2.0 - 1.0;
+        p.x *= uRes.x / uRes.y;
+
+        float t = uTime * 0.07;
+
+        // 4 drifting blob centers
+        vec2 c1 = vec2(sin(t * 1.1) * 0.6 - 0.3, cos(t * 0.9) * 0.5);
+        vec2 c2 = vec2(cos(t * 0.7 + 1.2) * 0.7,  sin(t * 1.3 + 2.0) * 0.6 - 0.2);
+        vec2 c3 = vec2(sin(t * 0.5 + 3.0) * 0.5 + 0.3, cos(t * 0.6 + 0.5) * 0.4 + 0.2);
+        vec2 c4 = vec2(cos(t * 1.0 + 2.5) * 0.6 - 0.4, sin(t * 0.8 + 1.5) * 0.5);
+
+        float r1 = 0.55, r2 = 0.50, r3 = 0.42, r4 = 0.48;
+        float field =
+            smoothstep(r1, 0.0, length(p - c1)) +
+            smoothstep(r2, 0.0, length(p - c2)) * 0.85 +
+            smoothstep(r3, 0.0, length(p - c3)) * 0.7 +
+            smoothstep(r4, 0.0, length(p - c4)) * 0.6;
+
+        // warp with low-octave fbm so blobs don't feel circular
+        float n = fbm(p * 1.4 + vec2(t * 0.3, -t * 0.2));
+        field *= 0.55 + 0.6 * n;
+
+        // tint
+        vec3 col = mix(uAccent, uAccent2, smoothstep(0.4, 1.4, field + n * 0.3));
+        float alpha = clamp(field * 0.9, 0.0, 1.0);
+
+        // soft grain
+        float g = (hash(gl_FragCoord.xy + uTime) - 0.5) * 0.04;
+        col += g;
+
+        // in light theme, lift toward white slightly so it reads as a watercolor wash
+        col = mix(col, vec3(1.0), (1.0 - uDark) * 0.15);
+
+        gl_FragColor = vec4(col, alpha);
+      }
+    `;
+
+    function compile(type, src) {
+      const sh = gl.createShader(type);
+      gl.shaderSource(sh, src); gl.compileShader(sh);
+      if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
+        console.warn('hero-fx shader:', gl.getShaderInfoLog(sh)); return null;
+      }
+      return sh;
+    }
+    const vs = compile(gl.VERTEX_SHADER, vsrc);
+    const fs = compile(gl.FRAGMENT_SHADER, fsrc);
+    if (!vs || !fs) return;
+    const prog = gl.createProgram();
+    gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
+    gl.useProgram(prog);
+
+    // Fullscreen triangle
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+    const aPos = gl.getAttribLocation(prog, 'aPos');
+    gl.enableVertexAttribArray(aPos);
+    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+    const uRes = gl.getUniformLocation(prog, 'uRes');
+    const uTime = gl.getUniformLocation(prog, 'uTime');
+    const uAccent = gl.getUniformLocation(prog, 'uAccent');
+    const uAccent2 = gl.getUniformLocation(prog, 'uAccent2');
+    const uDark = gl.getUniformLocation(prog, 'uDark');
+
+    function readVar(name) {
+      // e.g. --accent → returns rgb triple in 0..1
+      const c = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      if (!c) return [0.85, 0.46, 0.34];
+      // create a probe to resolve oklch / hex / rgb
+      const probe = document.createElement('div');
+      probe.style.color = c;
+      document.body.appendChild(probe);
+      const rgb = getComputedStyle(probe).color;
+      document.body.removeChild(probe);
+      const m = rgb.match(/rgba?\(([^)]+)\)/);
+      if (!m) return [0.85, 0.46, 0.34];
+      const [r, g, b] = m[1].split(',').map(s => parseFloat(s.trim()) / 255);
+      return [r, g, b];
+    }
+
+    function syncTheme() {
+      const a = readVar('--accent');
+      const a2 = readVar('--accent2');
+      gl.useProgram(prog);
+      gl.uniform3f(uAccent, a[0], a[1], a[2]);
+      gl.uniform3f(uAccent2, a2[0], a2[1], a2[2]);
+      const dark = (document.documentElement.getAttribute('data-theme') || 'dark') === 'dark' ? 1 : 0;
+      gl.uniform1f(uDark, dark);
+    }
+    syncTheme();
+    window.addEventListener('themechange', syncTheme);
+
+    let dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    function resize() {
+      const w = canvas.clientWidth | 0;
+      const h = canvas.clientHeight | 0;
+      const W = Math.max(1, (w * dpr) | 0);
+      const H = Math.max(1, (h * dpr) | 0);
+      if (canvas.width !== W || canvas.height !== H) {
+        canvas.width = W; canvas.height = H;
+        gl.viewport(0, 0, W, H);
+        gl.uniform2f(uRes, W, H);
+      }
+    }
+
+    let running = true;
+    let pausedAt = 0;
+    const start = performance.now();
+    function frame(now) {
+      if (!running) return;
+      resize();
+      gl.uniform1f(uTime, (now - start) / 1000);
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+
+    // Pause when offscreen to save battery
+    const io = new IntersectionObserver(entries => {
+      for (const e of entries) {
+        const wasRunning = running;
+        running = e.isIntersecting;
+        if (running && !wasRunning) requestAnimationFrame(frame);
+      }
+    });
+    io.observe(canvas);
+  })();
 
   // 3D tilt on project cards
   document.querySelectorAll('.proj').forEach(card => {
@@ -1497,6 +1931,27 @@
     });
     btn.addEventListener('mouseenter', () => { btn.style.transition = 'background .2s'; });
   });
+
+  // Contact form: open user's mail client with prefilled subject + body
+  window.submitContact = function (e) {
+    e.preventDefault();
+    const name = document.getElementById('cf-name').value.trim();
+    const email = document.getElementById('cf-email').value.trim();
+    const msg = document.getElementById('cf-msg').value.trim();
+    const hint = document.getElementById('cfHint');
+    if (!name || !email || !msg) {
+      hint.textContent = '↳ Please fill all three fields.';
+      hint.className = 'f-hint err';
+      return false;
+    }
+    const subject = `Portfolio inquiry from ${name}`;
+    const body = `Hi Varad,\n\n${msg}\n\n— ${name}\n${email}`;
+    const href = `mailto:vkottawar@ucsd.edu?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = href;
+    hint.textContent = '↳ Opening your mail app… if nothing happens, email vkottawar@ucsd.edu directly.';
+    hint.className = 'f-hint ok';
+    return false;
+  };
 
   // Counter animation for stat numbers
   function animateCounter(el, target, suffix) {
@@ -1585,59 +2040,74 @@
   (function typer() {
     const el = document.getElementById('roleText');
     if (!el) return;
-    const roles = ['Software Engineer', 'ML Researcher', 'GPU Programmer', 'Backend Architect'];
+    const roles = [
+      { txt: 'Software Engineer', kind: 'dev' },
+      { txt: 'Friend who actually replies', kind: 'human' },
+      { txt: 'ML Researcher', kind: 'dev' },
+      { txt: 'Trail-runner & dog-petter', kind: 'human' },
+      { txt: 'GPU Programmer', kind: 'dev' },
+      { txt: 'Maker of bad puns, occasional good code', kind: 'human' },
+      { txt: 'Backend Architect', kind: 'dev' },
+      { txt: 'Coffee-fueled optimist', kind: 'human' },
+    ];
     let r = 0, c = 0, deleting = false;
     const tick = () => {
-      const cur = roles[r];
+      const cur = roles[r].txt;
+      el.dataset.kind = roles[r].kind;
       if (!deleting) {
         c++; el.textContent = cur.slice(0, c);
-        if (c === cur.length) { deleting = true; return setTimeout(tick, 1500); }
+        if (c === cur.length) { deleting = true; return setTimeout(tick, 1700); }
       } else {
         c--; el.textContent = cur.slice(0, c);
         if (c === 0) { deleting = false; r = (r + 1) % roles.length; }
       }
-      setTimeout(tick, deleting ? 35 : 65);
+      setTimeout(tick, deleting ? 30 : 60);
     };
     setTimeout(tick, 1200);
   })();
 
-  /* ── ASCII PORTRAIT ───────────────────────────────── */
-  (function ascii() {
-    const btn = document.getElementById('asciiToggle');
-    const canvas = document.getElementById('asciiCanvas');
-    const img = document.querySelector('.hero-img');
-    const right = document.querySelector('.hero-right');
-    if (!btn || !canvas || !img) return;
-    let built = false;
-    const build = () => {
-      if (built) return;
-      const ramp = ' .:-=+*#%@';
-      const W = 90, H = 90;
-      const cv = document.createElement('canvas');
-      cv.width = W; cv.height = H;
-      const ctx = cv.getContext('2d');
-      try {
-        ctx.drawImage(img, 0, 0, W, H);
-        const d = ctx.getImageData(0, 0, W, H).data;
-        let out = '';
-        for (let y = 0; y < H; y++) {
-          for (let x = 0; x < W; x++) {
-            const i = (y * W + x) * 4;
-            const lum = (d[i] * 0.299 + d[i+1] * 0.587 + d[i+2] * 0.114) / 255;
-            out += ramp[Math.floor(lum * (ramp.length - 1))];
-          }
-          out += '\n';
-        }
-        canvas.textContent = out;
-        built = true;
-      } catch (e) { canvas.textContent = '[image not ready]'; }
-    };
+  /* ── THEME TOGGLE ───────────────────────────────── */
+  (function theme() {
+    const btn = document.getElementById('themeToggle');
+    if (!btn) return;
+    const root = document.documentElement;
+    const stored = localStorage.getItem('vk-theme');
+    if (stored) {
+      root.setAttribute('data-theme', stored);
+      document.body.setAttribute('data-theme', stored);
+    }
     btn.addEventListener('click', () => {
-      build();
-      right.classList.toggle('ascii');
-      btn.textContent = right.classList.contains('ascii') ? 'Photo' : 'ASCII';
+      const cur = root.getAttribute('data-theme') || 'dark';
+      const next = cur === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      document.body.setAttribute('data-theme', next);
+      localStorage.setItem('vk-theme', next);
+      window.dispatchEvent(new Event('themechange'));
     });
-    if (img.complete) build(); else img.addEventListener('load', build);
+  })();
+
+  /* ── SCROLL BG PARALLAX ─────────────────────────── */
+  (function bgFx() {
+    const grid = document.querySelector('#bg-fx .grid');
+    const drift = document.getElementById('bgDrift');
+    if (!grid || !drift) return;
+    let raf = null;
+    const update = () => {
+      raf = null;
+      const y = window.scrollY;
+      const max = (document.body.scrollHeight - window.innerHeight) || 1;
+      const p = Math.min(1, y / max);
+      // Grid: drift via background-position so it loops and never runs out
+      const gy = (-y * 0.12) % 64;
+      grid.style.backgroundPosition = `0px ${gy}px, 0px ${gy}px`;
+      // Wireframe: subtle parallax that wraps so it stays visible all the way down
+      const rot = -8 + p * 48;
+      const tx = -p * 320;
+      const ty = ((-y * 0.18) % (window.innerHeight * 1.2));
+      drift.style.transform = `translate3d(${tx}px, ${ty}px, 0) rotate(${rot}deg)`;
+    };
+    window.addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(update); }, { passive: true });
+    update();
   })();
 
   /* ── WHOAMI TERMINAL ──────────────────────────────── */
@@ -1879,46 +2349,209 @@
     });
   })();
 
-  /* ── KONAMI / MATRIX MODE ────────────────────────── */
-  (function matrix() {
+  /* ── KONAMI / CLI EASTER EGG ───────────────────────── */
+  (function cli() {
+    const overlay = document.getElementById('cli');
+    const body = document.getElementById('cliBody');
+    const input = document.getElementById('cliInput');
+    const closeBtn = overlay.querySelector('.cli-close');
+    const hintBtn = document.getElementById('footerHint');
+    if (!overlay || !body || !input) return;
+
     const seq = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
     let pos = 0;
-    document.addEventListener('keydown', (e) => {
-      const k = e.key;
-      if (k === seq[pos] || k.toLowerCase() === seq[pos]) {
-        pos++;
-        if (pos === seq.length) { activate(); pos = 0; }
-      } else { pos = 0; }
-    });
-    let raf, drops, cv, ctx;
-    function activate() {
-      document.body.classList.toggle('matrix');
-      if (document.body.classList.contains('matrix')) startRain();
-      else stopRain();
-    }
+
+    // Matrix rain hooks (re-implemented since we removed the old module)
+    let mxRaf = null, mxCv = null, mxCtx = null, mxDrops = null;
     function startRain() {
-      cv = document.getElementById('matrix-canvas');
-      ctx = cv.getContext('2d');
-      cv.width = innerWidth; cv.height = innerHeight;
-      const cols = Math.floor(cv.width / 14);
-      drops = Array(cols).fill(0).map(() => Math.random() * cv.height);
+      mxCv = document.getElementById('matrix-canvas');
+      if (!mxCv) return;
+      mxCtx = mxCv.getContext('2d');
+      mxCv.width = innerWidth; mxCv.height = innerHeight;
+      const cols = Math.floor(mxCv.width / 14);
+      mxDrops = Array(cols).fill(0).map(() => Math.random() * mxCv.height);
       const chars = '01アイウエオカキクケコサシスセソタチツテト';
       function tick() {
-        ctx.fillStyle = 'rgba(0,0,0,0.08)';
-        ctx.fillRect(0, 0, cv.width, cv.height);
-        ctx.fillStyle = '#00ff66'; ctx.font = '14px monospace';
-        drops.forEach((y, i) => {
-          ctx.fillText(chars[Math.floor(Math.random() * chars.length)], i * 14, y);
-          drops[i] = y > cv.height ? 0 : y + 14;
+        mxCtx.fillStyle = 'rgba(0,0,0,0.08)';
+        mxCtx.fillRect(0, 0, mxCv.width, mxCv.height);
+        mxCtx.fillStyle = '#00ff66'; mxCtx.font = '14px monospace';
+        mxDrops.forEach((y, i) => {
+          mxCtx.fillText(chars[Math.floor(Math.random() * chars.length)], i * 14, y);
+          mxDrops[i] = y > mxCv.height ? 0 : y + 14;
         });
-        raf = requestAnimationFrame(tick);
+        mxRaf = requestAnimationFrame(tick);
       }
       tick();
     }
     function stopRain() {
-      cancelAnimationFrame(raf);
-      if (ctx) ctx.clearRect(0, 0, cv.width, cv.height);
+      cancelAnimationFrame(mxRaf);
+      if (mxCtx && mxCv) mxCtx.clearRect(0, 0, mxCv.width, mxCv.height);
     }
+
+    // ── CLI helpers ─────────────────────────────
+    let busy = false;
+    function append(text, cls) {
+      const div = document.createElement('div');
+      div.className = 'cli-line ' + (cls || 'out');
+      div.innerHTML = text;
+      body.appendChild(div);
+      body.scrollTop = body.scrollHeight;
+      return div;
+    }
+    function typeOut(text, cls) {
+      return new Promise(resolve => {
+        const div = append('', cls);
+        let i = 0;
+        const speed = Math.max(6, 20 - text.length / 40);
+        function step() {
+          if (i >= text.length) { resolve(); return; }
+          // emit chunks of 1-3 chars to feel snappier
+          const chunk = Math.min(3, text.length - i);
+          div.innerHTML = text.slice(0, i + chunk);
+          i += chunk;
+          body.scrollTop = body.scrollHeight;
+          setTimeout(step, speed);
+        }
+        step();
+      });
+    }
+    async function block(lines) {
+      busy = true;
+      input.disabled = true;
+      for (const [text, cls] of lines) {
+        await typeOut(text, cls || 'out');
+      }
+      busy = false;
+      input.disabled = false;
+      input.focus();
+    }
+
+    // ── Commands ────────────────────────────────
+    const commands = {
+      help: () => block([
+        ['available commands:', 'out'],
+        ['  <k>help</k>       — this list', 'out'],
+        ['  <k>whoami</k>     — about varad', 'out'],
+        ['  <k>projects</k>   — recent work (jumps to section)', 'out'],
+        ['  <k>skills</k>     — capabilities (jumps to section)', 'out'],
+        ['  <k>contact</k>    — email + socials', 'out'],
+        ['  <k>resume</k>     — open resume', 'out'],
+        ['  <k>theme</k>      — toggle dark / light', 'out'],
+        ['  <k>matrix</k>     — toggle matrix rain mode', 'out'],
+        ['  <k>sudo hire-me</k> — try it', 'out'],
+        ['  <k>clear</k>      — wipe terminal', 'out'],
+        ['  <k>exit</k>       — close terminal', 'out'],
+      ]),
+      whoami: () => block([
+        ['varad kottawar — software engineer, ml researcher', 'out'],
+        ['  · MS Computer Engineering @ UCSD', 'out'],
+        ['  · prev: Software Engineer @ Deutsche Bank (2 yr)', 'out'],
+        ['  · based in San Diego · open to SWE / MLE roles', 'out'],
+      ]),
+      projects: async () => {
+        await block([['→ scrolling to /projects', 'ok']]);
+        document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      },
+      skills: async () => {
+        await block([['→ scrolling to /skills', 'ok']]);
+        document.getElementById('skills')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      },
+      contact: () => block([
+        ['email:    <k>vkottawar@ucsd.edu</k>', 'out'],
+        ['github:   <k>github.com/Varad02</k>', 'out'],
+        ['linkedin: <k>linkedin.com/in/varadkottawar</k>', 'out'],
+        ['devpost:  <k>devpost.com/vkottawar</k>', 'out'],
+      ]),
+      socials: () => commands.contact(),
+      resume: () => block([
+        ['→ resume not wired up yet — email <k>vkottawar@ucsd.edu</k> for a copy.', 'ok'],
+      ]),
+      cv: () => commands.resume(),
+      theme: async () => {
+        document.getElementById('themeToggle')?.click();
+        await block([['→ theme toggled', 'ok']]);
+      },
+      matrix: async () => {
+        document.body.classList.toggle('matrix');
+        if (document.body.classList.contains('matrix')) {
+          startRain();
+          await block([['→ entering the matrix… (run <k>matrix</k> again to leave)', 'ok']]);
+        } else {
+          stopRain();
+          await block([['→ exited the matrix', 'ok']]);
+        }
+      },
+      clear: () => { body.innerHTML = ''; },
+      exit: () => close(),
+      'sudo hire-me': () => block([
+        ['[sudo] password for visitor:', 'out'],
+        ['hiring varad…', 'out'],
+        ['  ✓ availability confirmed (summer + fulltime)', 'ok'],
+        ['  ✓ stack: python · cuda · pytorch · go · ts · react', 'ok'],
+        ['  ✓ next step: <k>email vkottawar@ucsd.edu</k>', 'ok'],
+        ['process complete. exit code 0.', 'ok'],
+      ]),
+    };
+
+    // Banner shown on first open
+    let opened = false;
+    async function banner() {
+      if (opened) return;
+      opened = true;
+      await block([
+        ['varad-os 1.0.4 · last login: just now', 'out'],
+        ['type <k>help</k> to see what i can do.', 'out'],
+      ]);
+    }
+
+    function open() {
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden', 'false');
+      setTimeout(() => input.focus(), 100);
+      banner();
+    }
+    function close() {
+      overlay.classList.remove('open');
+      overlay.setAttribute('aria-hidden', 'true');
+    }
+    function toggle() {
+      overlay.classList.contains('open') ? close() : open();
+    }
+
+    // Konami detection
+    document.addEventListener('keydown', (e) => {
+      // Don't trip while typing in the CLI itself or other inputs
+      const tag = (e.target && e.target.tagName) || '';
+      if (tag === 'INPUT' || tag === 'TEXTAREA') {
+        if (e.target === input && e.key === 'Escape') close();
+        return;
+      }
+      const k = e.key;
+      if (k === seq[pos] || k.toLowerCase() === seq[pos]) {
+        pos++;
+        if (pos === seq.length) { open(); pos = 0; }
+      } else { pos = 0; }
+      if (k === 'Escape') close();
+    });
+
+    hintBtn?.addEventListener('click', open);
+    closeBtn?.addEventListener('click', close);
+
+    input.addEventListener('keydown', (e) => {
+      if (busy) { e.preventDefault(); return; }
+      if (e.key === 'Enter') {
+        const raw = input.value.trim();
+        input.value = '';
+        if (!raw) return;
+        append(raw, 'cmd');
+        const cmd = raw.toLowerCase();
+        const fn = commands[cmd];
+        if (fn) { fn(); }
+        else {
+          append(`command not found: ${raw}. type <k>help</k>.`, 'err');
+        }
+      }
+    });
   })();
 </script>
 </body>
