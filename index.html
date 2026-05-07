@@ -79,6 +79,7 @@
     #cursor-trail {
       position: fixed; inset: 0; z-index: 9998;
       pointer-events: none;
+      display: none;
     }
     #cursor-trail .tdot {
       position: absolute; width: 6px; height: 6px;
@@ -141,7 +142,7 @@
     :root[data-theme="light"] #hero-fx { opacity: .42; }
     #hero-fx canvas { width: 100%; height: 100%; display: block; }
     #hero {
-      min-height: calc(100vh - 96px); display: grid;
+      min-height: 100vh; display: grid;
       grid-template-columns: 1fr 1fr;
       position: relative; overflow: hidden;
     }
@@ -215,8 +216,7 @@
     .hero-right {
       position: relative; overflow: hidden;
       clip-path: polygon(8% 0, 100% 0, 100% 100%, 0 100%);
-      background:
-        linear-gradient(135deg, #1a1612 0%, #0f0d0a 60%, #080808 100%);
+      background: var(--bg);
     }
     .hero-right.no-img::before {
       content: 'PORTRAIT';
@@ -333,7 +333,6 @@
     .rd4 { transition-delay: .4s; }
 
     /* ── ABOUT / EXPERTISE ──────────────────────────── */
-    #expertise { background: var(--bg2); }
     .expertise-layout {
       display: grid; grid-template-columns: 5fr 4fr;
       gap: 80px; align-items: start; margin-bottom: 72px;
@@ -448,7 +447,6 @@
     .proj:hover .proj-arrow { border-color: var(--accent); color: var(--accent); transform: rotate(45deg); }
 
     /* ── TIMELINE / WORK ────────────────────────────── */
-    #experience { background: var(--bg2); }
     .work-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; }
     .work-items { margin-top: 48px; }
     .work-item {
@@ -517,7 +515,6 @@
     .sg-pill:hover { border-color: var(--accent); color: var(--text); }
 
     /* ── PERSONAL ───────────────────────────────────── */
-    #personal { background: var(--bg2); }
     .personal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; margin-top: 56px; }
     @media (max-width: 1100px) and (min-width: 901px) {
       .personal-grid { grid-template-columns: 1fr 1fr; }
@@ -903,6 +900,7 @@
 
     /* ── CURSOR TRAIL ────────────────────────────── */
     .cursor-trail-dot {
+      display: none;
       position: fixed; width: 4px; height: 4px;
       background: var(--accent); border-radius: 50%;
       pointer-events: none; z-index: 9996;
@@ -1039,7 +1037,7 @@
     :root[data-theme="light"] #bg-fx .drift { opacity: .22; }
     #bg-fx .drift svg { width: 100%; height: 100%; stroke: var(--accent); fill: none; stroke-width: 1; }
     /* Sections sit normally — bg-fx is a pointer-none ambient overlay */
-    nav, section, footer { position: relative; z-index: 1; }
+    section, footer { position: relative; z-index: 1; }
     /* Boot overlay above bg-fx */
     #boot { z-index: 10000; }
 
@@ -1117,7 +1115,7 @@
 <div id="cli" role="dialog" aria-label="Easter egg terminal" aria-hidden="true">
   <div class="cli-head">
     <span class="cli-dots"><span class="cli-dot r"></span><span class="cli-dot y"></span><span class="cli-dot g"></span></span>
-    <span class="cli-title"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="52243b213b263d201224332033367c363724">[email&#160;protected]</a> — bash</span>
+    <span class="cli-title"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="62140b110b160d102214031003064c060714">[email&#160;protected]</a> — bash</span>
     <span class="cli-hint">type <b>help</b> · esc to close</span>
     <button class="cli-close" type="button" aria-label="Close terminal">close</button>
   </div>
@@ -1172,7 +1170,7 @@
 
     <div class="hero-ctas">
       <a href="#contact" class="btn-primary">Get in touch</a>
-      <a href="./resume.pdf" target="_blank" rel="noopener" class="btn-outline">
+      <a href="assets/Varad_Kottawar_Resume.pdf" target="_blank" rel="noopener" class="btn-outline">
         <svg style="width:14px;height:14px;margin-right:8px;vertical-align:-2px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 3h7v7M21 3l-9 9M5 21h14a2 2 0 002-2v-7"/></svg>Resume
       </a>
       <a href="#projects" class="btn-outline">View my work</a>
@@ -1185,7 +1183,7 @@
   </div>
 
   <div class="hero-right">
-    <img class="hero-img" src="./IMG_20240211_172808_965.jpg" alt="Varad Kottawar with a mountain dog in the Himalayas" onerror="this.style.display='none';this.parentElement.classList.add('no-img');" />
+    <img class="hero-img" src="assets/me.jpg" alt="Varad Kottawar with a mountain dog in the Himalayas" onerror="this.style.display='none';this.parentElement.classList.add('no-img');" />
     <span class="hero-img-tag">📍 somewhere with a good dog</span>
   </div>
   <div class="hero-scroll">
@@ -1634,8 +1632,8 @@
         <p class="sec-label reveal">Contact</p>
         <h2 class="contact-big reveal">Got a project?<br /><span class="outline">Let's talk.</span></h2>
         <p class="contact-sub reveal">Open to full-time roles, research collaborations, and interesting side projects. I respond fast.</p>
-        <a href="/cdn-cgi/l/email-protection#fd8b969289899c8a9c8fbd889e8e99d3989988" class="contact-email-link reveal" id="emailLink">
-          <span id="emailText"><span class="__cf_email__" data-cfemail="681e03071c1c091f091a281d0b1b0c460d0c1d">[email&#160;protected]</span></span>
+        <a href="/cdn-cgi/l/email-protection#b0c6dbdfc4c4d1c7d1c2f0c5d3c3d49ed5d4c5" class="contact-email-link reveal" id="emailLink">
+          <span id="emailText"><span class="__cf_email__" data-cfemail="56203d39222237213724162335253278333223">[email&#160;protected]</span></span>
           <svg fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
         </a>
         <div class="contact-icons reveal">
@@ -1656,7 +1654,7 @@
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
           </button>
         </div>
-        <p class="f-hint" id="cfHint">Submitting opens your mail app addressed to <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ddabb6b2a9a9bcaabcaf9da8beaeb9f3b8b9a8">[email&#160;protected]</a>.</p>
+        <p class="f-hint" id="cfHint">Submitting opens your mail app addressed to <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b6c0ddd9c2c2d7c1d7c4f6c3d5c5d298d3d2c3">[email&#160;protected]</a>.</p>
       </form>
     </div>
   </div>
@@ -1689,14 +1687,8 @@
   document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
 
   // Pre-create a pool of trail dots
-  const TRAIL_LEN = 14;
+  const TRAIL_LEN = 0;
   const tdots = [];
-  for (let i = 0; i < TRAIL_LEN; i++) {
-    const d = document.createElement('div');
-    d.className = 'tdot';
-    trail.appendChild(d);
-    tdots.push({ el: d, x: 0, y: 0 });
-  }
   let tHead = 0;
   let tTick = 0;
 
@@ -1704,23 +1696,6 @@
     dot.style.left = mx + 'px'; dot.style.top = my + 'px';
     rx += (mx - rx) * .12; ry += (my - ry) * .12;
     ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
-
-    // Sample mouse position into trail every 2 frames
-    if ((tTick++ % 2) === 0) {
-      const slot = tdots[tHead];
-      slot.x = mx; slot.y = my;
-      tHead = (tHead + 1) % TRAIL_LEN;
-    }
-    // Render trail: oldest = most faded/small, newest = brightest/largest
-    for (let i = 0; i < TRAIL_LEN; i++) {
-      const idx = (tHead + i) % TRAIL_LEN;
-      const age = (TRAIL_LEN - 1 - i) / (TRAIL_LEN - 1); // 0 = oldest, 1 = newest
-      const slot = tdots[idx];
-      const scale = 0.3 + age * 0.9;
-      const opacity = age * 0.55;
-      slot.el.style.transform = `translate(${slot.x}px, ${slot.y}px) translate(-50%,-50%) scale(${scale})`;
-      slot.el.style.opacity = opacity.toFixed(3);
-    }
     requestAnimationFrame(animCursor);
   })();
 
@@ -2330,6 +2305,7 @@
 
   /* ── CURSOR TRAIL ────────────────────────────────── */
   (function trail() {
+    return; // trail disabled
     if (window.innerWidth < 900) return;
     let last = 0;
     document.addEventListener('mousemove', (e) => {
@@ -2430,17 +2406,17 @@
     const commands = {
       help: () => block([
         ['available commands:', 'out'],
-        ['  <k>help</k>', 'out'],
-        ['  <k>whoami</k>', 'out'],
-        ['  <k>projects</k>', 'out'],
-        ['  <k>skills</k>', 'out'],
-        ['  <k>contact</k>', 'out'],
-        ['  <k>resume</k>', 'out'],
-        ['  <k>theme</k>', 'out'],
-        ['  <k>matrix</k>', 'out'],
-        ['  <k>sudo hire-me</k>', 'out'],
-        ['  <k>clear</k>', 'out'],
-        ['  <k>exit</k>', 'out'],
+        ['  <k>help</k>       — this list', 'out'],
+        ['  <k>whoami</k>     — about varad', 'out'],
+        ['  <k>projects</k>   — recent work (jumps to section)', 'out'],
+        ['  <k>skills</k>     — capabilities (jumps to section)', 'out'],
+        ['  <k>contact</k>    — email + socials', 'out'],
+        ['  <k>resume</k>     — open resume', 'out'],
+        ['  <k>theme</k>      — toggle dark / light', 'out'],
+        ['  <k>matrix</k>     — toggle matrix rain mode', 'out'],
+        ['  <k>sudo hire-me</k> — try it', 'out'],
+        ['  <k>clear</k>      — wipe terminal', 'out'],
+        ['  <k>exit</k>       — close terminal', 'out'],
       ]),
       whoami: () => block([
         ['varad kottawar — software engineer, ml researcher', 'out'],
@@ -2463,14 +2439,9 @@
         ['devpost:  <k>devpost.com/vkottawar</k>', 'out'],
       ]),
       socials: () => commands.contact(),
-      resume: () => {
-        const url = './resume.pdf';
-        window.open(url, '_blank', 'noopener,noreferrer');
-        return block([
-          ['→ opening resume in a new tab', 'ok'],
-          [`  direct link: <a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`, 'info'],
-        ]);
-      },
+      resume: () => block([
+        ['→ resume not wired up yet — email <k>vkottawar@ucsd.edu</k> for a copy.', 'ok'],
+      ]),
       cv: () => commands.resume(),
       theme: async () => {
         document.getElementById('themeToggle')?.click();
@@ -2492,7 +2463,7 @@
         ['[sudo] password for visitor:', 'out'],
         ['hiring varad…', 'out'],
         ['  ✓ availability confirmed (summer + fulltime)', 'ok'],
-        ['  ✓ stack: python · cuda · pytorch · c++ · java · react', 'ok'],
+        ['  ✓ stack: python · cuda · pytorch · go · ts · react', 'ok'],
         ['  ✓ next step: <k>email vkottawar@ucsd.edu</k>', 'ok'],
         ['process complete. exit code 0.', 'ok'],
       ]),
