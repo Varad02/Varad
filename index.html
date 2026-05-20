@@ -2514,7 +2514,6 @@
         window.open(url, '_blank', 'noopener,noreferrer');
         return block([
           ['→ opening resume in a new tab', 'ok'],
-          [`  direct link: <a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`, 'info'],
         ]);
       },
       cv: () => commands.resume(),
