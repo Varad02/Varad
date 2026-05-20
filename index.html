@@ -149,7 +149,8 @@
 
     .hero-left {
       display: flex; flex-direction: column; justify-content: flex-end;
-      padding: 140px 56px 64px; position: relative; z-index: 2;
+      padding: 140px 40px 64px max(56px, calc((100vw - 1120px) / 2));
+      position: relative; z-index: 2;
     }
 
     /* Animated name */
@@ -251,7 +252,7 @@
       font-size: 12px; color: var(--muted); letter-spacing: .04em;
     }
     .hero-scroll {
-      position: absolute; bottom: 28px; left: 56px;
+      position: absolute; bottom: 28px; left: max(56px, calc((100vw - 1120px) / 2));
       display: flex; align-items: center; gap: 12px;
       font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
       color: var(--muted); z-index: 3;
@@ -544,15 +545,60 @@
       display: flex; align-items: center; gap: 14px;
       padding: 13px 0; border-bottom: 1px solid var(--border);
       transition: background .15s; text-decoration: none; color: inherit;
+      width: 100%; background: none; border-left: none; border-right: none; border-top: none;
+      font-family: inherit; text-align: left; cursor: none;
     }
     .mp-track:last-child { border-bottom: none; }
     .mp-track:hover { background: rgba(196,180,154,.04); }
-    .mp-track.playing .mp-name { color: var(--accent); }
-    .mp-num { width: 18px; font-size: 12px; color: #333; text-align: center; flex-shrink: 0; }
+    .mp-track.playing .mp-name,
+    .mp-track.paused  .mp-name { color: var(--accent); }
+    .mp-num {
+      width: 18px; font-size: 12px; color: #333; text-align: center; flex-shrink: 0;
+      position: relative; display: inline-flex; align-items: center; justify-content: center;
+      height: 16px;
+    }
+    .mp-num .glyph { display: none; }
+    .mp-num .glyph.idle  { display: inline; }
+    .mp-track:hover .mp-num .glyph.idle { display: none; }
+    .mp-track:hover .mp-num .glyph.play { display: inline; color: var(--accent); }
+    .mp-track.paused .mp-num .glyph.idle,
+    .mp-track.paused .mp-num .glyph.play { display: none; }
+    .mp-track.paused .mp-num .glyph.play2 { display: inline; color: var(--accent); }
+    .mp-track.playing .mp-num .glyph.idle,
+    .mp-track.playing .mp-num .glyph.play,
+    .mp-track.playing .mp-num .glyph.play2 { display: none; }
+    .mp-track.playing .mp-num .eq { display: inline-flex; }
+    .mp-num .eq {
+      display: none; gap: 2px; align-items: flex-end; height: 12px;
+    }
+    .mp-num .eq i {
+      width: 2px; background: var(--accent); display: inline-block;
+      animation: eqBounce linear infinite; transform-origin: bottom;
+    }
+    .mp-num .eq i:nth-child(1){height:6px;animation-duration:.5s}
+    .mp-num .eq i:nth-child(2){height:10px;animation-duration:.75s}
+    .mp-num .eq i:nth-child(3){height:7px;animation-duration:.55s}
+
     .mp-art { width: 36px; height: 36px; border-radius: 2px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; }
     .mp-info { flex: 1; min-width: 0; }
     .mp-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .mp-artist { font-size: 12px; color: var(--muted); }
+
+    /* Hidden YouTube iframe host — offscreen but real size so YT lets it play */
+    .mp-yt-host {
+      position: fixed; left: -9999px; top: -9999px;
+      width: 320px; height: 180px; opacity: 0; pointer-events: none;
+    }
+    .mp-credit {
+      margin-top: 16px; font-size: 10px; color: var(--muted); letter-spacing: .12em;
+      text-transform: uppercase; text-align: right; opacity: .7;
+    }
+    .music-player.is-buffering .mp-header .mp-label::after {
+      content: ' · buffering'; color: var(--muted); text-transform: none; letter-spacing: 0;
+    }
+    /* Header EQ only animates while playing */
+    .music-player:not(.is-playing) .mp-header .mp-eq { opacity: .25; }
+    .music-player:not(.is-playing) .mp-header .mp-bar { animation-play-state: paused; }
     .mp-dur { font-size: 12px; color: var(--muted); flex-shrink: 0; }
 
     .meme-card {
@@ -1352,19 +1398,20 @@
         </div>
       </div>
 
-      <div class="proj reveal rd1" data-tags="vision fullstack ai">
+      <div class="proj reveal rd1" data-tags="ai gpu">
         <div class="proj-accent-bar"></div>
         <div class="proj-idx">03</div>
-        <p class="proj-cat">Computer Vision · Full Stack Development</p>
-        <h3 class="proj-name">Grocery Receipt Scanner</h3>
-        <p class="proj-desc">Claude vision model extracts structured data from receipt images — line items, prices, and categories — with per-item confidence scoring, inline correction, and a spending analytics dashboard backed by a versioned REST API.</p>
+        <p class="proj-cat">LLM Inference · Systems</p>
+        <h3 class="proj-name">PagedQA</h3>
+        <p class="proj-highlight">KV-cache prefix reuse on Llama-3.1-8B</p>
+        <p class="proj-desc">Document Q&amp;A powered by vLLM with prefix caching. Every question against the same document shares an identical prompt prefix, so cached KV blocks skip recomputation on subsequent requests. Includes a live KV block visualizer and cold-vs-warm latency benchmarks.</p>
         <div class="proj-tags">
-          <span class="proj-tag">Claude Vision</span><span class="proj-tag">Flask</span>
-          <span class="proj-tag">Chart.js</span><span class="proj-tag">SQLite</span>
+          <span class="proj-tag">vLLM</span><span class="proj-tag">Llama-3.1</span>
+          <span class="proj-tag">Gradio</span><span class="proj-tag">Plotly</span>
         </div>
         <div class="proj-footer">
           <div class="proj-links">
-            <a href="https://github.com/Varad02" target="_blank" rel="noopener" class="proj-link">GitHub →</a>
+            <a href="https://github.com/Varad02/PagedQA" target="_blank" rel="noopener" class="proj-link">GitHub →</a>
           </div>
           <span class="proj-arrow">↗</span>
         </div>
@@ -1509,51 +1556,78 @@
             <div class="mp-bar"></div><div class="mp-bar"></div>
           </div>
         </div>
-        <a class="mp-track playing" href="https://music.youtube.com/watch?v=8HBcV0MtAQg&si=tGEoxKE-oy87PdGc" target="_blank" rel="noopener">
-          <span class="mp-num">♪</span>
+        <button class="mp-track" type="button" data-vid="8HBcV0MtAQg">
+          <span class="mp-num">
+            <span class="glyph idle">1</span>
+            <span class="glyph play">▶</span>
+            <span class="glyph play2">❚❚</span>
+            <span class="eq"><i></i><i></i><i></i></span>
+          </span>
           <div class="mp-art" style="background:#1a1a2e;">🎸</div>
           <div class="mp-info">
             <p class="mp-name">No Role Modelz</p>
             <p class="mp-artist">J. Cole</p>
           </div>
           <span class="mp-dur">4:53</span>
-        </a>
-        <a class="mp-track" href="https://music.youtube.com/watch?v=6tjlU4w4fSo&si=sSYvuim345tEmv3C" target="_blank" rel="noopener">
-          <span class="mp-num">2</span>
+        </button>
+        <button class="mp-track" type="button" data-vid="6tjlU4w4fSo">
+          <span class="mp-num">
+            <span class="glyph idle">2</span>
+            <span class="glyph play">▶</span>
+            <span class="glyph play2">❚❚</span>
+            <span class="eq"><i></i><i></i><i></i></span>
+          </span>
           <div class="mp-art" style="background:#1a2e1a;">🎵</div>
           <div class="mp-info">
             <p class="mp-name">Love Yourz</p>
             <p class="mp-artist">J. Cole</p>
           </div>
           <span class="mp-dur">3:30</span>
-        </a>
-        <a class="mp-track" href="https://music.youtube.com/watch?v=K1FlAphL2p8&si=tyU4UhOld016k4s7" target="_blank" rel="noopener">
-          <span class="mp-num">3</span>
+        </button>
+        <button class="mp-track" type="button" data-vid="K1FlAphL2p8">
+          <span class="mp-num">
+            <span class="glyph idle">3</span>
+            <span class="glyph play">▶</span>
+            <span class="glyph play2">❚❚</span>
+            <span class="eq"><i></i><i></i><i></i></span>
+          </span>
           <div class="mp-art" style="background:#2e1a1a;">🎹</div>
           <div class="mp-info">
             <p class="mp-name">Stressed Out</p>
             <p class="mp-artist">twenty one pilots</p>
           </div>
           <span class="mp-dur">3:23</span>
-        </a>
-        <a class="mp-track" href="https://music.youtube.com/watch?v=NXi9scTzyxM&si=zZ55RI57q2i4W2Bh" target="_blank" rel="noopener">
-          <span class="mp-num">4</span>
+        </button>
+        <button class="mp-track" type="button" data-vid="NXi9scTzyxM">
+          <span class="mp-num">
+            <span class="glyph idle">4</span>
+            <span class="glyph play">▶</span>
+            <span class="glyph play2">❚❚</span>
+            <span class="eq"><i></i><i></i><i></i></span>
+          </span>
           <div class="mp-art" style="background:#1a2a2e;">🎶</div>
           <div class="mp-info">
             <p class="mp-name">Count Me Out</p>
             <p class="mp-artist">Kendrick Lamar</p>
           </div>
           <span class="mp-dur">4:44</span>
-        </a>
-        <a class="mp-track" href="https://music.youtube.com/watch?v=r7-A9NqUjRI&si=kb5bxdYxtne36sN_" target="_blank" rel="noopener">
-          <span class="mp-num">5</span>
+        </button>
+        <button class="mp-track" type="button" data-vid="r7-A9NqUjRI">
+          <span class="mp-num">
+            <span class="glyph idle">5</span>
+            <span class="glyph play">▶</span>
+            <span class="glyph play2">❚❚</span>
+            <span class="eq"><i></i><i></i><i></i></span>
+          </span>
           <div class="mp-art" style="background:#2a1e2e;">🎤</div>
           <div class="mp-info">
             <p class="mp-name">24K Magic</p>
             <p class="mp-artist">Bruno Mars</p>
           </div>
           <span class="mp-dur">3:46</span>
-        </a>
+        </button>
+        <div class="mp-yt-host"><div id="ytPlayer"></div></div>
+        <p class="mp-credit">powered by youtube · click a track</p>
       </div>
 
       <div class="meme-card reveal rd1">
@@ -1677,7 +1751,7 @@
   <p class="footer-copy">© 2026 Varad Kottawar · San Diego, California</p>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
   // Custom cursor + trail
   const dot = document.getElementById('cursor-dot');
   const ring = document.getElementById('cursor-ring');
@@ -2527,6 +2601,128 @@
         }
       }
     });
+  })();
+
+  /* ── INLINE MUSIC PLAYER (YouTube IFrame API) ─────── */
+  (function musicPlayer() {
+    const player = document.querySelector('.music-player');
+    const tracks = player ? [...player.querySelectorAll('.mp-track')] : [];
+    if (!tracks.length) return;
+
+    let yt = null;            // YT.Player instance
+    let pendingVid = null;    // queued track if API not ready
+    let currentVid = null;
+    let isPlaying = false;
+    let progressRaf = null;
+    let bufferTimeout = null; // fallback when embed is blocked (e.g. sandboxed origins)
+
+    // Load IFrame API once
+    if (!window.YT) {
+      const s = document.createElement('script');
+      s.src = 'https://www.youtube.com/iframe_api';
+      document.head.appendChild(s);
+    }
+
+    window.onYouTubeIframeAPIReady = function () {
+      yt = new YT.Player('ytPlayer', {
+        width: 320, height: 180,
+        playerVars: {
+          autoplay: 0, controls: 0, disablekb: 1, modestbranding: 1,
+          playsinline: 1, rel: 0, fs: 0,
+        },
+        events: {
+          onReady: () => {
+            // Some embeds load muted — unmute and full volume so the user hears them.
+            try { yt.unMute(); yt.setVolume(100); } catch (_) {}
+            if (pendingVid) { yt.loadVideoById(pendingVid); pendingVid = null; }
+          },
+          onStateChange: (e) => {
+            // -1 unstarted, 0 ended, 1 playing, 2 paused, 3 buffering, 5 cued
+            if (e.data === 1) {
+              isPlaying = true; player.classList.add('is-playing'); player.classList.remove('is-buffering');
+              clearTimeout(bufferTimeout);
+            }
+            else if (e.data === 2) { isPlaying = false; player.classList.remove('is-playing'); clearTimeout(bufferTimeout); }
+            else if (e.data === 3) {
+              player.classList.add('is-buffering');
+              // If we're still buffering after 6s, the embed is probably blocked — open YouTube directly.
+              clearTimeout(bufferTimeout);
+              bufferTimeout = setTimeout(() => fallbackToYouTube(currentVid), 6000);
+            }
+            else if (e.data === 0) {
+              // Auto-advance
+              const idx = tracks.findIndex(t => t.dataset.vid === currentVid);
+              const next = tracks[(idx + 1) % tracks.length];
+              if (next) play(next);
+              return;
+            }
+            paint();
+          },
+          onError: (e) => {
+            // 101/150 = video owner doesn't allow embedding; open the song on YouTube instead.
+            clearTimeout(bufferTimeout);
+            fallbackToYouTube(currentVid);
+          }
+        }
+      });
+    };
+
+    function showFallback(msg, url) {
+      let toast = document.getElementById('mpToast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'mpToast';
+        toast.style.cssText = 'position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--accent);color:var(--text);padding:12px 18px;font-family:var(--sans);font-size:13px;z-index:10000;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90vw;';
+        document.body.appendChild(toast);
+      }
+      toast.textContent = msg;
+      toast.style.opacity = '1';
+      clearTimeout(toast._h);
+      toast._h = setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+    }
+
+    function fallbackToYouTube(vid) {
+      if (!vid) return;
+      clearTimeout(bufferTimeout);
+      try { yt && yt.stopVideo && yt.stopVideo(); } catch (_) {}
+      isPlaying = false;
+      player.classList.remove('is-playing', 'is-buffering');
+      paint();
+      const t = tracks.find(t => t.dataset.vid === vid);
+      const title = t ? t.querySelector('.mp-name')?.textContent : 'this track';
+      const url = 'https://music.youtube.com/watch?v=' + vid;
+      showFallback(`${title} can't play here — opening on YouTube Music…`);
+      window.open(url, '_blank', 'noopener');
+    }
+
+    function play(track) {
+      const vid = track.dataset.vid;
+      if (!yt || !yt.loadVideoById) {
+        pendingVid = vid; currentVid = vid; isPlaying = true;
+        player.classList.add('is-buffering');
+        paint();
+        return;
+      }
+      if (currentVid === vid) {
+        isPlaying ? yt.pauseVideo() : yt.playVideo();
+      } else {
+        currentVid = vid;
+        yt.loadVideoById(vid);
+        isPlaying = true;
+        player.classList.add('is-buffering');
+      }
+      paint();
+    }
+
+    function paint() {
+      tracks.forEach(t => {
+        const active = t.dataset.vid === currentVid;
+        t.classList.toggle('playing', active && isPlaying);
+        t.classList.toggle('paused',  active && !isPlaying);
+      });
+    }
+
+    tracks.forEach(t => t.addEventListener('click', () => play(t)));
   })();
 </script>
 </body>
