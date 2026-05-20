@@ -2476,17 +2476,17 @@
     const commands = {
       help: () => block([
         ['available commands:', 'out'],
-        ['  <k>help</k>       — this list', 'out'],
-        ['  <k>whoami</k>     — about varad', 'out'],
-        ['  <k>projects</k>   — recent work (jumps to section)', 'out'],
-        ['  <k>skills</k>     — capabilities (jumps to section)', 'out'],
-        ['  <k>contact</k>    — email + socials', 'out'],
-        ['  <k>resume</k>     — open resume', 'out'],
-        ['  <k>theme</k>      — toggle dark / light', 'out'],
-        ['  <k>matrix</k>     — toggle matrix rain mode', 'out'],
-        ['  <k>sudo hire-me</k> — try it', 'out'],
-        ['  <k>clear</k>      — wipe terminal', 'out'],
-        ['  <k>exit</k>       — close terminal', 'out'],
+        ['  <k>help</k>', 'out'],
+        ['  <k>whoami</k>', 'out'],
+        ['  <k>projects</k>', 'out'],
+        ['  <k>skills</k>', 'out'],
+        ['  <k>contact</k>', 'out'],
+        ['  <k>resume</k>', 'out'],
+        ['  <k>theme</k>', 'out'],
+        ['  <k>matrix</k>', 'out'],
+        ['  <k>sudo hire-me</k>', 'out'],
+        ['  <k>clear</k>', 'out'],
+        ['  <k>exit</k>', 'out'],
       ]),
       whoami: () => block([
         ['varad kottawar — software engineer, ml researcher', 'out'],
@@ -2509,9 +2509,14 @@
         ['devpost:  <k>devpost.com/vkottawar</k>', 'out'],
       ]),
       socials: () => commands.contact(),
-      resume: () => block([
-        ['→ resume not wired up yet — email <k>vkottawar@ucsd.edu</k> for a copy.', 'ok'],
-      ]),
+      resume: () => {
+        const url = './resume.pdf';
+        window.open(url, '_blank', 'noopener,noreferrer');
+        return block([
+          ['→ opening resume in a new tab', 'ok'],
+          [`  direct link: <a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`, 'info'],
+        ]);
+      },
       cv: () => commands.resume(),
       theme: async () => {
         document.getElementById('themeToggle')?.click();
@@ -2533,7 +2538,7 @@
         ['[sudo] password for visitor:', 'out'],
         ['hiring varad…', 'out'],
         ['  ✓ availability confirmed (summer + fulltime)', 'ok'],
-        ['  ✓ stack: python · cuda · pytorch · go · ts · react', 'ok'],
+        ['  ✓ stack: python · cuda · pytorch · java · ts · react', 'ok'],
         ['  ✓ next step: <k>email vkottawar@ucsd.edu</k>', 'ok'],
         ['process complete. exit code 0.', 'ok'],
       ]),
